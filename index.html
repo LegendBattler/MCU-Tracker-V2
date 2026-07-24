@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MCU Chronological Tracker</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b0e14;
+      --card-bg: #151a23;
+      --card-border: #232a36;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --accent-red: #e50914;
+      --accent-blue: #38bdf8;
+      --essential: #10b981;
+      --optional: #f59e0b;
+      --skippable: #ef4444;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg);
+      color: var(--text-main);
+      padding: 2rem 1rem;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 900px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    header h1 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, #e50914, #ff6b6b);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+    }
+
+    header p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    /* Stats Dashboard */
+    .dashboard {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .progress-bar-container {
+      width: 100%;
+      height: 10px;
+      background: var(--card-border);
+      border-radius: 5px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #10b981, #38bdf8);
+      transition: width 0.3s ease;
+    }
+
+    .stats-text {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* Controls & Filters */
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      background: var(--card-bg);
+      padding: 1rem;
+      border-radius: 12px;
+      border: 1px solid var(--card-border);
+    }
+
+    .filter-group {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      background: var(--card-border);
+      color: var(--text-main);
+      border: none;
+      padding: 0.5rem 0.85rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn:hover { background: #2d3748; }
+    .btn.active { background: var(--accent-red); color: white; }
+
+    .toggle-container {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+
+    .toggle-container input { cursor: pointer; }
+
+    /* Timeline List */
+    .timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .item {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      transition: border-color 0.2s, opacity 0.2s;
+    }
+
+    .item.completed {
+      opacity: 0.5;
+      border-color: transparent;
+    }
+
+    .item-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .checkbox {
+      width: 20px;
+      height: 20px;
+      accent-color: var(--accent-red);
+      cursor: pointer;
+    }
+
+    .item-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .item-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .item-meta {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .tag {
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .tag-essential { background: rgba(16, 185, 129, 0.15); color: var(--essential); }
+    .tag-optional { background: rgba(245, 158, 11, 0.15); color: var(--optional); }
+    .tag-skippable { background: rgba(239, 68, 68, 0.15); color: var(--skippable); }
+    .tag-type { background: #2d3748; color: var(--text-muted); }
+
+    @media (max-width: 600px) {
+      .controls { flex-direction: column; align-items: stretch; }
+      .filter-group { justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>MCU Personal Tracker</h1>
+      <p>Master Chronological Viewing Order</p>
+    </header>
+
+    <!-- Dashboard -->
+    <div class="dashboard">
+      <div class="stats-text">
+        <span id="progress-text">0 / 0 Completed</span>
+        <span id="progress-percent">0%</span>
+      </div>
+      <div class="progress-bar-container">
+        <div class="progress-bar" id="progress-bar"></div>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls">
+      <div class="filter-group">
+        <button class="btn active" onclick="setFilter('all')">All</button>
+        <button class="btn" onclick="setFilter('essential')">Essential Only</button>
+        <button class="btn" onclick="setFilter('unwatched')">Unwatched</button>
+      </div>
+
+      <label class="toggle-container">
+        <input type="checkbox" id="hide-skippable" onchange="renderTimeline()">
+        Hide Skippable (🔴)
+      </label>
+    </div>
+
+    <!-- List -->
+    <div class="timeline" id="timeline"></div>
+  </div>
+
+  <script>
+    const mcuData = [
+      { id: "1", title: "Captain America: The First Avenger", type: "Movie", year: "1942–1945", tier: "essential" },
+      { id: "2", title: "Agent Carter", type: "Series / Short", year: "1946", tier: "skippable" },
+      { id: "3", title: "Captain Marvel", type: "Movie", year: "1995", tier: "optional" },
+      { id: "4", title: "Iron Man", type: "Movie", year: "2008", tier: "essential" },
+      { id: "5", title: "The Incredible Hulk", type: "Movie", year: "2008", tier: "skippable" },
+      { id: "6", title: "Iron Man 2", type: "Movie", year: "2010", tier: "essential" },
+      { id: "7", title: "Thor", type: "Movie", year: "2011", tier: "essential" },
+      { id: "8", title: "The Avengers", type: "Movie", year: "2012", tier: "essential" },
+      { id: "9", title: "Iron Man 3", type: "Movie", year: "2012", tier: "optional" },
+      { id: "10", title: "Thor: The Dark World", type: "Movie", year: "2013", tier: "optional" },
+      { id: "11", title: "Captain America: The Winter Soldier", type: "Movie", year: "2014", tier: "essential" },
+      { id: "12", title: "Agents of S.H.I.E.L.D. (Seasons 1–7)", type: "Series", year: "2013–2020", tier: "optional" },
+      { id: "13", title: "Guardians of the Galaxy", type: "Movie", year: "2014", tier: "essential" },
+      { id: "14", title: "Guardians of the Galaxy Vol. 2", type: "Movie", year: "2014", tier: "optional" },
+      { id: "15", title: "I Am Groot", type: "Shorts", year: "2014", tier: "skippable" },
+      { id: "16", title: "Avengers: Age of Ultron", type: "Movie", year: "2015", tier: "essential" },
+      { id: "17", title: "Ant-Man", type: "Movie", year: "2015", tier: "essential" },
+      { id: "18", title: "Daredevil / Defenders Saga", type: "Series", year: "2015–2018", tier: "optional" },
+      { id: "19", title: "Captain America: Civil War", type: "Movie", year: "2016", tier: "essential" },
+      { id: "20", title: "Black Widow", type: "Movie", year: "2016", tier: "optional" },
+      { id: "21", title: "Black Panther", type: "Movie", year: "2016", tier: "essential" },
+      { id: "22", title: "Spider-Man: Homecoming", type: "Movie", year: "2016", tier: "essential" },
+      { id: "23", title: "Doctor Strange", type: "Movie", year: "2016–2017", tier: "essential" },
+      { id: "24", title: "Thor: Ragnarok", type: "Movie", year: "2017", tier: "essential" },
+      { id: "25", title: "Ant-Man and the Wasp", type: "Movie", year: "2018", tier: "essential" },
+      { id: "26", title: "Avengers: Infinity War", type: "Movie", year: "2018", tier: "essential" },
+      { id: "27", title: "Avengers: Endgame", type: "Movie", year: "2018–2023", tier: "essential" },
+      { id: "28", title: "Loki (Seasons 1 & 2)", type: "Series", year: "Multiverse", tier: "essential" },
+      { id: "29", title: "What If...? (Seasons 1–3)", type: "Animated Series", year: "Multiverse", tier: "skippable" },
+      { id: "30", title: "WandaVision", type: "Series", year: "2023", tier: "essential" },
+      { id: "31", title: "The Falcon and the Winter Soldier", type: "Series", year: "2024", tier: "optional" },
+      { id: "32", title: "Spider-Man: Far From Home", type: "Movie", year: "2024", tier: "essential" },
+      { id: "33", title: "Spider-Man: No Way Home", type: "Movie", year: "2024", tier: "essential" },
+      { id: "34", title: "Doctor Strange in the Multiverse of Madness", type: "Movie", year: "2024", tier: "essential" },
+      { id: "35", title: "Hawkeye", type: "Series", year: "2024", tier: "optional" },
+      { id: "36", title: "Moon Knight", type: "Series", year: "2025", tier: "optional" },
+      { id: "37", title: "She-Hulk: Attorney at Law", type: "Series", year: "2025", tier: "skippable" },
+      { id: "38", title: "Ms. Marvel", type: "Series", year: "2025", tier: "skippable" },
+      { id: "39", title: "Thor: Love and Thunder", type: "Movie", year: "2025", tier: "optional" },
+      { id: "40", title: "Black Panther: Wakanda Forever", type: "Movie", year: "2025", tier: "optional" },
+      { id: "41", title: "Guardians of the Galaxy Vol. 3", type: "Movie", year: "2026", tier: "optional" },
+      { id: "42", title: "Secret Invasion", type: "Series", year: "2026", tier: "skippable" },
+      { id: "43", title: "The Marvels", type: "Movie", year: "2026", tier: "skippable" },
+      { id: "44", title: "Deadpool & Wolverine", type: "Movie", year: "Multiverse", tier: "essential" }
+    ];
+
+    let userProgress = JSON.parse(localStorage.getItem('mcu_progress')) || {};
+    let currentFilter = 'all';
+
+    function saveProgress() {
+      localStorage.setItem('mcu_progress', JSON.stringify(userProgress));
+      updateDashboard();
+    }
+
+    function toggleItem(id) {
+      userProgress[id] = !userProgress[id];
+      saveProgress();
+      renderTimeline();
+    }
+
+    function setFilter(filter) {
+      currentFilter = filter;
+      document.querySelectorAll('.filter-group .btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      renderTimeline();
+    }
+
+    function updateDashboard() {
+      const hideSkippable = document.getElementById('hide-skippable').checked;
+      const visibleData = mcuData.filter(item => !hideSkippable || item.tier !== 'skippable');
+      
+      const total = visibleData.length;
+      const completed = visibleData.filter(item => userProgress[item.id]).length;
+      const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+      document.getElementById('progress-text').innerText = `${completed} / ${total} Completed`;
+      document.getElementById('progress-percent').innerText = `${percent}%`;
+      document.getElementById('progress-bar').style.width = `${percent}%`;
+    }
+
+    function renderTimeline() {
+      const container = document.getElementById('timeline');
+      const hideSkippable = document.getElementById('hide-skippable').checked;
+      container.innerHTML = '';
+
+      const filteredData = mcuData.filter(item => {
+        if (hideSkippable && item.tier === 'skippable') return false;
+        if (currentFilter === 'essential') return item.tier === 'essential';
+        if (currentFilter === 'unwatched') return !userProgress[item.id];
+        return true;
+      });
+
+      filteredData.forEach(item => {
+        const isDone = !!userProgress[item.id];
+        const el = document.createElement('div');
+        el.className = `item ${isDone ? 'completed' : ''}`;
+        
+        const tierBadge = item.tier === 'essential' 
+          ? '<span class="tag tag-essential">🟢 Essential</span>'
+          : item.tier === 'optional'
+          ? '<span class="tag tag-optional">🟡 Optional</span>'
+          : '<span class="tag tag-skippable">🔴 Skippable</span>';
+
+        el.innerHTML = `
+          <div class="item-left">
+            <input type="checkbox" class="checkbox" ${isDone ? 'checked' : ''} onchange="toggleItem('${item.id}')">
+            <div class="item-info">
+              <div class="item-title">${item.title}</div>
+              <div class="item-meta">
+                ${tierBadge}
+                <span class="tag tag-type">${item.type}</span>
+                <span>(${item.year})</span>
+              </div>
+            </div>
+          </div>
+        `;
+        container.appendChild(el);
+      });
+
+      updateDashboard();
+    }
+
+    // Initial render
+    renderTimeline();
+  </script>
+</body>
+</html>
