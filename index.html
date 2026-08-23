@@ -1,379 +1,895 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MCU Chronological Tracker</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bg: #0b0e14;
-      --card-bg: #151a23;
-      --card-border: #232a36;
-      --text-main: #f1f5f9;
-      --text-muted: #94a3b8;
-      --accent-red: #e50914;
-      --accent-blue: #38bdf8;
-      --essential: #10b981;
-      --optional: #f59e0b;
-      --skippable: #ef4444;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: var(--bg);
-      color: var(--text-main);
-      padding: 2rem 1rem;
-      display: flex;
-      justify-content: center;
-    }
-
-    .container {
-      width: 100%;
-      max-width: 900px;
-    }
-
-    header {
-      text-align: center;
-      margin-bottom: 2rem;
-    }
-
-    header h1 {
-      font-size: 2.2rem;
-      font-weight: 800;
-      letter-spacing: -0.5px;
-      background: linear-gradient(135deg, #e50914, #ff6b6b);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-bottom: 0.5rem;
-    }
-
-    header p {
-      color: var(--text-muted);
-      font-size: 0.95rem;
-    }
-
-    /* Stats Dashboard */
-    .dashboard {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 12px;
-      padding: 1.25rem;
-      margin-bottom: 1.5rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-    }
-
-    .progress-bar-container {
-      width: 100%;
-      height: 10px;
-      background: var(--card-border);
-      border-radius: 5px;
-      overflow: hidden;
-    }
-
-    .progress-bar {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, #10b981, #38bdf8);
-      transition: width 0.3s ease;
-    }
-
-    .stats-text {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      font-weight: 500;
-    }
-
-    /* Controls & Filters */
-    .controls {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.75rem;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1.5rem;
-      background: var(--card-bg);
-      padding: 1rem;
-      border-radius: 12px;
-      border: 1px solid var(--card-border);
-    }
-
-    .filter-group {
-      display: flex;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-    }
-
-    .btn {
-      background: var(--card-border);
-      color: var(--text-main);
-      border: none;
-      padding: 0.5rem 0.85rem;
-      border-radius: 6px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .btn:hover { background: #2d3748; }
-    .btn.active { background: var(--accent-red); color: white; }
-
-    .toggle-container {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      cursor: pointer;
-    }
-
-    .toggle-container input { cursor: pointer; }
-
-    /* Timeline List */
-    .timeline {
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-    }
-
-    .item {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 10px;
-      padding: 1rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-      transition: border-color 0.2s, opacity 0.2s;
-    }
-
-    .item.completed {
-      opacity: 0.5;
-      border-color: transparent;
-    }
-
-    .item-left {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
-
-    .checkbox {
-      width: 20px;
-      height: 20px;
-      accent-color: var(--accent-red);
-      cursor: pointer;
-    }
-
-    .item-info {
-      display: flex;
-      flex-direction: column;
-      gap: 0.25rem;
-    }
-
-    .item-title {
-      font-size: 1rem;
-      font-weight: 600;
-      color: var(--text-main);
-    }
-
-    .item-meta {
-      display: flex;
-      gap: 0.5rem;
-      align-items: center;
-      font-size: 0.75rem;
-      color: var(--text-muted);
-    }
-
-    .tag {
-      padding: 0.15rem 0.4rem;
-      border-radius: 4px;
-      font-size: 0.7rem;
-      font-weight: 700;
-      text-transform: uppercase;
-    }
-
-    .tag-essential { background: rgba(16, 185, 129, 0.15); color: var(--essential); }
-    .tag-optional { background: rgba(245, 158, 11, 0.15); color: var(--optional); }
-    .tag-skippable { background: rgba(239, 68, 68, 0.15); color: var(--skippable); }
-    .tag-type { background: #2d3748; color: var(--text-muted); }
-
-    @media (max-width: 600px) {
-      .controls { flex-direction: column; align-items: stretch; }
-      .filter-group { justify-content: center; }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCU Chronological Timeline & Skip Guide</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        mcu: {
+                            bg: '#0D0D11',
+                            card: '#181820',
+                            cardHover: '#22222E',
+                            red: '#E62429',
+                            redHover: '#B81D21',
+                            gold: '#D97706',
+                            slate: '#64748B'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #0D0D11;
+            color: #F1F5F9;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0D0D11;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #27273A;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #E62429;
+        }
+        .modal-animate {
+            transition: opacity 0.25s ease-in-out, transform 0.25s ease-in-out;
+        }
+    </style>
 </head>
-<body>
+<body class="min-h-screen flex flex-col justify-between antialiased selection:bg-mcu-red selection:text-white">
 
-  <div class="container">
-    <header>
-      <h1>MCU Personal Tracker</h1>
-      <p>Master Chronological Viewing Order</p>
+    <!-- TOP HEADER -->
+    <header class="sticky top-0 z-30 bg-[#0D0D11]/90 backdrop-blur-md border-b border-slate-800/80 shadow-2xl">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                
+                <!-- Title & Tagline -->
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <span class="bg-mcu-red text-white font-black text-xl px-2 py-0.5 tracking-tighter uppercase rounded-sm shadow-md shadow-mcu-red/20">
+                            MARVEL
+                        </span>
+                        <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-white">
+                            MCU Chronological Tracker
+                        </h1>
+                    </div>
+                    
+                    <!-- GitHub Repo Link -->
+                    <a href="https://github.com" target="_blank" rel="noopener noreferrer" 
+                       class="md:hidden text-slate-400 hover:text-white transition-colors p-1"
+                       aria-label="GitHub Repository">
+                        <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">
+                            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+                        </svg>
+                    </a>
+                </div>
+
+                <!-- Progress Bar & Actions -->
+                <div class="flex-1 max-w-md flex flex-col gap-1.5">
+                    <div class="flex justify-between items-center text-xs sm:text-sm font-semibold">
+                        <span class="text-slate-400">MCU Completion Progress</span>
+                        <span id="progress-text" class="text-mcu-red font-mono font-bold">0% (0/0)</span>
+                    </div>
+                    <div class="w-full bg-slate-800 rounded-full h-3 overflow-hidden p-0.5 border border-slate-700/50">
+                        <div id="progress-bar" class="bg-mcu-red h-full rounded-full transition-all duration-500 ease-out shadow-lg shadow-mcu-red/50" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- Desktop GitHub Link -->
+                <a href="https://github.com" target="_blank" rel="noopener noreferrer" 
+                   class="hidden md:flex items-center gap-2 text-xs font-semibold text-slate-400 hover:text-white bg-slate-800/60 hover:bg-slate-800 px-3 py-2 rounded-lg border border-slate-700/50 transition-all">
+                    <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                        <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+                    </svg>
+                    GitHub
+                </a>
+
+            </div>
+        </div>
     </header>
 
-    <!-- Dashboard -->
-    <div class="dashboard">
-      <div class="stats-text">
-        <span id="progress-text">0 / 0 Completed</span>
-        <span id="progress-percent">0%</span>
-      </div>
-      <div class="progress-bar-container">
-        <div class="progress-bar" id="progress-bar"></div>
-      </div>
-    </div>
-
-    <!-- Controls -->
-    <div class="controls">
-      <div class="filter-group">
-        <button class="btn active" onclick="setFilter('all')">All</button>
-        <button class="btn" onclick="setFilter('essential')">Essential Only</button>
-        <button class="btn" onclick="setFilter('unwatched')">Unwatched</button>
-      </div>
-
-      <label class="toggle-container">
-        <input type="checkbox" id="hide-skippable" onchange="renderTimeline()">
-        Hide Skippable (🔴)
-      </label>
-    </div>
-
-    <!-- List -->
-    <div class="timeline" id="timeline"></div>
-  </div>
-
-  <script>
-    const mcuData = [
-      { id: "1", title: "Captain America: The First Avenger", type: "Movie", year: "1942–1945", tier: "essential" },
-      { id: "2", title: "Agent Carter", type: "Series / Short", year: "1946", tier: "skippable" },
-      { id: "3", title: "Captain Marvel", type: "Movie", year: "1995", tier: "optional" },
-      { id: "4", title: "Iron Man", type: "Movie", year: "2008", tier: "essential" },
-      { id: "5", title: "The Incredible Hulk", type: "Movie", year: "2008", tier: "skippable" },
-      { id: "6", title: "Iron Man 2", type: "Movie", year: "2010", tier: "essential" },
-      { id: "7", title: "Thor", type: "Movie", year: "2011", tier: "essential" },
-      { id: "8", title: "The Avengers", type: "Movie", year: "2012", tier: "essential" },
-      { id: "9", title: "Iron Man 3", type: "Movie", year: "2012", tier: "optional" },
-      { id: "10", title: "Thor: The Dark World", type: "Movie", year: "2013", tier: "optional" },
-      { id: "11", title: "Captain America: The Winter Soldier", type: "Movie", year: "2014", tier: "essential" },
-      { id: "12", title: "Agents of S.H.I.E.L.D. (Seasons 1–7)", type: "Series", year: "2013–2020", tier: "optional" },
-      { id: "13", title: "Guardians of the Galaxy", type: "Movie", year: "2014", tier: "essential" },
-      { id: "14", title: "Guardians of the Galaxy Vol. 2", type: "Movie", year: "2014", tier: "optional" },
-      { id: "15", title: "I Am Groot", type: "Shorts", year: "2014", tier: "skippable" },
-      { id: "16", title: "Avengers: Age of Ultron", type: "Movie", year: "2015", tier: "essential" },
-      { id: "17", title: "Ant-Man", type: "Movie", year: "2015", tier: "essential" },
-      { id: "18", title: "Daredevil / Defenders Saga", type: "Series", year: "2015–2018", tier: "optional" },
-      { id: "19", title: "Captain America: Civil War", type: "Movie", year: "2016", tier: "essential" },
-      { id: "20", title: "Black Widow", type: "Movie", year: "2016", tier: "optional" },
-      { id: "21", title: "Black Panther", type: "Movie", year: "2016", tier: "essential" },
-      { id: "22", title: "Spider-Man: Homecoming", type: "Movie", year: "2016", tier: "essential" },
-      { id: "23", title: "Doctor Strange", type: "Movie", year: "2016–2017", tier: "essential" },
-      { id: "24", title: "Thor: Ragnarok", type: "Movie", year: "2017", tier: "essential" },
-      { id: "25", title: "Ant-Man and the Wasp", type: "Movie", year: "2018", tier: "essential" },
-      { id: "26", title: "Avengers: Infinity War", type: "Movie", year: "2018", tier: "essential" },
-      { id: "27", title: "Avengers: Endgame", type: "Movie", year: "2018–2023", tier: "essential" },
-      { id: "28", title: "Loki (Seasons 1 & 2)", type: "Series", year: "Multiverse", tier: "essential" },
-      { id: "29", title: "What If...? (Seasons 1–3)", type: "Animated Series", year: "Multiverse", tier: "skippable" },
-      { id: "30", title: "WandaVision", type: "Series", year: "2023", tier: "essential" },
-      { id: "31", title: "The Falcon and the Winter Soldier", type: "Series", year: "2024", tier: "optional" },
-      { id: "32", title: "Spider-Man: Far From Home", type: "Movie", year: "2024", tier: "essential" },
-      { id: "33", title: "Spider-Man: No Way Home", type: "Movie", year: "2024", tier: "essential" },
-      { id: "34", title: "Doctor Strange in the Multiverse of Madness", type: "Movie", year: "2024", tier: "essential" },
-      { id: "35", title: "Hawkeye", type: "Series", year: "2024", tier: "optional" },
-      { id: "36", title: "Moon Knight", type: "Series", year: "2025", tier: "optional" },
-      { id: "37", title: "She-Hulk: Attorney at Law", type: "Series", year: "2025", tier: "skippable" },
-      { id: "38", title: "Ms. Marvel", type: "Series", year: "2025", tier: "skippable" },
-      { id: "39", title: "Thor: Love and Thunder", type: "Movie", year: "2025", tier: "optional" },
-      { id: "40", title: "Black Panther: Wakanda Forever", type: "Movie", year: "2025", tier: "optional" },
-      { id: "41", title: "Guardians of the Galaxy Vol. 3", type: "Movie", year: "2026", tier: "optional" },
-      { id: "42", title: "Secret Invasion", type: "Series", year: "2026", tier: "skippable" },
-      { id: "43", title: "The Marvels", type: "Movie", year: "2026", tier: "skippable" },
-      { id: "44", title: "Deadpool & Wolverine", type: "Movie", year: "Multiverse", tier: "essential" }
-    ];
-
-    let userProgress = JSON.parse(localStorage.getItem('mcu_progress')) || {};
-    let currentFilter = 'all';
-
-    function saveProgress() {
-      localStorage.setItem('mcu_progress', JSON.stringify(userProgress));
-      updateDashboard();
-    }
-
-    function toggleItem(id) {
-      userProgress[id] = !userProgress[id];
-      saveProgress();
-      renderTimeline();
-    }
-
-    function setFilter(filter) {
-      currentFilter = filter;
-      document.querySelectorAll('.filter-group .btn').forEach(btn => btn.classList.remove('active'));
-      event.target.classList.add('active');
-      renderTimeline();
-    }
-
-    function updateDashboard() {
-      const hideSkippable = document.getElementById('hide-skippable').checked;
-      const visibleData = mcuData.filter(item => !hideSkippable || item.tier !== 'skippable');
-      
-      const total = visibleData.length;
-      const completed = visibleData.filter(item => userProgress[item.id]).length;
-      const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
-
-      document.getElementById('progress-text').innerText = `${completed} / ${total} Completed`;
-      document.getElementById('progress-percent').innerText = `${percent}%`;
-      document.getElementById('progress-bar').style.width = `${percent}%`;
-    }
-
-    function renderTimeline() {
-      const container = document.getElementById('timeline');
-      const hideSkippable = document.getElementById('hide-skippable').checked;
-      container.innerHTML = '';
-
-      const filteredData = mcuData.filter(item => {
-        if (hideSkippable && item.tier === 'skippable') return false;
-        if (currentFilter === 'essential') return item.tier === 'essential';
-        if (currentFilter === 'unwatched') return !userProgress[item.id];
-        return true;
-      });
-
-      filteredData.forEach(item => {
-        const isDone = !!userProgress[item.id];
-        const el = document.createElement('div');
-        el.className = `item ${isDone ? 'completed' : ''}`;
-        
-        const tierBadge = item.tier === 'essential' 
-          ? '<span class="tag tag-essential">🟢 Essential</span>'
-          : item.tier === 'optional'
-          ? '<span class="tag tag-optional">🟡 Optional</span>'
-          : '<span class="tag tag-skippable">🔴 Skippable</span>';
-
-        el.innerHTML = `
-          <div class="item-left">
-            <input type="checkbox" class="checkbox" ${isDone ? 'checked' : ''} onchange="toggleItem('${item.id}')">
-            <div class="item-info">
-              <div class="item-title">${item.title}</div>
-              <div class="item-meta">
-                ${tierBadge}
-                <span class="tag tag-type">${item.type}</span>
-                <span>(${item.year})</span>
-              </div>
+    <!-- CONTROL BAR (Search & Filters) -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-2 w-full">
+        <div class="flex flex-col lg:flex-row gap-4 justify-between items-stretch lg:items-center bg-mcu-card p-4 rounded-xl border border-slate-800 shadow-xl">
+            
+            <!-- Search Input -->
+            <div class="relative flex-1">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                </div>
+                <input id="search-input" type="text" placeholder="Search by title or prerequisite movie..." 
+                       class="w-full pl-10 pr-4 py-2.5 bg-[#0D0D11] border border-slate-700/80 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-mcu-red focus:ring-1 focus:ring-mcu-red transition-all">
             </div>
-          </div>
-        `;
-        container.appendChild(el);
-      });
 
-      updateDashboard();
-    }
+            <!-- Filter Buttons -->
+            <div class="flex flex-wrap gap-1.5 sm:gap-2 text-xs sm:text-sm font-medium" id="filter-buttons">
+                <button data-filter="all" class="filter-btn active bg-mcu-red text-white px-3 py-2 rounded-lg transition-all shadow">All</button>
+                <button data-filter="essential" class="filter-btn bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-2 rounded-lg transition-all">Essential Only</button>
+                <button data-filter="tied_essential" class="filter-btn bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-2 rounded-lg transition-all">Tied & Essential</button>
+                <button data-filter="movies" class="filter-btn bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-2 rounded-lg transition-all">Movies Only</button>
+                <button data-filter="tv" class="filter-btn bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-2 rounded-lg transition-all">TV Shows Only</button>
+                <button data-filter="unwatched" class="filter-btn bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-2 rounded-lg transition-all">Unwatched Only</button>
+            </div>
 
-    // Initial render
-    renderTimeline();
-  </script>
+        </div>
+    </section>
+
+    <!-- TIMELINE CARDS GRID -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full">
+        <div id="timeline-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <!-- Cards populated dynamically via JavaScript -->
+        </div>
+        
+        <!-- Empty State -->
+        <div id="empty-state" class="hidden text-center py-16">
+            <div class="text-slate-600 text-5xl mb-3">🛡️</div>
+            <h3 class="text-lg font-bold text-slate-300">No MCU Entries Found</h3>
+            <p class="text-sm text-slate-500 mt-1">Try adjusting your search query or filter selection.</p>
+        </div>
+    </main>
+
+    <!-- MODAL OVERLAY -->
+    <div id="modal-backdrop" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 opacity-0 pointer-events-none transition-opacity duration-300 flex items-center justify-center p-4">
+        <div id="modal-card" class="bg-mcu-card border border-slate-700/80 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl transform scale-95 transition-all duration-300 flex flex-col">
+            
+            <!-- Modal Header -->
+            <div class="sticky top-0 bg-mcu-card/95 backdrop-blur border-b border-slate-800 p-5 flex justify-between items-start gap-4 z-10">
+                <div>
+                    <div class="flex items-center gap-2 mb-1" id="modal-badges">
+                        <!-- Category/Type Badges populated dynamically -->
+                    </div>
+                    <h2 id="modal-title" class="text-2xl font-black text-white tracking-tight">
+                        <!-- Title populated dynamically -->
+                    </h2>
+                    <p id="modal-subtitle" class="text-xs text-slate-400 font-mono mt-0.5">
+                        <!-- Release & Phase info -->
+                    </p>
+                </div>
+                <button id="modal-close-btn" class="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-all">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Modal Content Body -->
+            <div class="p-6 space-y-6">
+                
+                <!-- Section 1: Prerequisites -->
+                <div>
+                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2.5 flex items-center gap-2">
+                        <span class="text-mcu-red">➔</span> Prerequisites ("Watch Before This")
+                    </h3>
+                    <div id="modal-prereqs" class="flex flex-wrap gap-2">
+                        <!-- Prerequisite Pills -->
+                    </div>
+                </div>
+
+                <!-- Section 2: If You Skip This... -->
+                <div class="bg-[#0D0D11]/60 rounded-xl p-4 border border-slate-800">
+                    <h3 class="text-xs font-bold text-mcu-red uppercase tracking-wider mb-2.5 flex items-center gap-2">
+                        <span>⚠️</span> If You Skip This, You Miss Out On:
+                    </h3>
+                    <ul id="modal-missed-plot" class="space-y-2 text-sm text-slate-300">
+                        <!-- Missed plot bullets -->
+                    </ul>
+                </div>
+
+                <!-- Section 3: Summary Context -->
+                <div>
+                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-2">
+                        <span class="text-amber-500">📌</span> Chronological Context
+                    </h3>
+                    <p id="modal-summary" class="text-sm text-slate-300 leading-relaxed bg-slate-800/40 p-4 rounded-xl border border-slate-800">
+                        <!-- Summary -->
+                    </p>
+                </div>
+
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="border-t border-slate-800 p-4 bg-[#0D0D11]/40 flex justify-end">
+                <button id="modal-close-bottom" class="px-5 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-sm font-semibold transition-all">
+                    Close Details
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-slate-800/80 bg-[#0D0D11] py-6 text-center text-xs text-slate-500">
+        <div class="max-w-7xl mx-auto px-4">
+            MCU Chronological Viewing Order & Skip Guide &bull; Designed for GitHub Pages
+        </div>
+    </footer>
+
+    <!-- APP SCRIPT -->
+    <script>
+        // MCU CHRONOLOGICAL DATASET
+        const mcuData = [
+            {
+                id: "cap-1",
+                title: "Captain America: The First Avenger",
+                type: "Movie",
+                releaseYear: 2011,
+                category: "Essential",
+                chronologicalPhase: "Phase 1",
+                prerequisites: [],
+                skipDetails: {
+                    summary: "Set during World War II (1942-1945). Establishes the origin of Steve Rogers, the Super Soldier serum, Hydra, and the Space Stone.",
+                    missedPlot: [
+                        "Steve Rogers & Bucky Barnes origin and deep bond.",
+                        "First appearance of the Space Stone (contained inside the Tesseract).",
+                        "Foundational creation of S.H.I.E.L.D. via Howard Stark and Peggy Carter."
+                    ]
+                }
+            },
+            {
+                id: "cap-marvel",
+                title: "Captain Marvel",
+                type: "Movie",
+                releaseYear: 2019,
+                category: "Tied",
+                chronologicalPhase: "Phase 3",
+                prerequisites: ["Captain America: The First Avenger"],
+                skipDetails: {
+                    summary: "Set in 1995. Follows Carol Danvers as she discovers her cosmic origin and powers amidst the Kree-Skrull war.",
+                    missedPlot: [
+                        "How Nick Fury lost his eye and received the Avengers pager.",
+                        "Origin of the name 'Avengers' and early Tesseract research.",
+                        "Introduction of Skrulls and Kree alien empires."
+                    ]
+                }
+            },
+            {
+                id: "iron-man-1",
+                title: "Iron Man",
+                type: "Movie",
+                releaseYear: 2008,
+                category: "Essential",
+                chronologicalPhase: "Phase 1",
+                prerequisites: [],
+                skipDetails: {
+                    summary: "Set in 2008. The birth of the modern Marvel Cinematic Universe, detailing Tony Stark's transformation into Iron Man.",
+                    missedPlot: [
+                        "Tony Stark's character arc, Pepper Potts, and Rhodey introductions.",
+                        "The iconic post-credit scene: Nick Fury introducing the 'Avengers Initiative'.",
+                        "S.H.I.E.L.D. agent Phil Coulson's debut."
+                    ]
+                }
+            },
+            {
+                id: "iron-man-2",
+                title: "Iron Man 2",
+                type: "Movie",
+                releaseYear: 2010,
+                category: "Tied",
+                chronologicalPhase: "Phase 1",
+                prerequisites: ["Iron Man"],
+                skipDetails: {
+                    summary: "Set in 2010. Tony deals with palladium toxicity, government pressure, and Ivan Vanko's revenge.",
+                    missedPlot: [
+                        "First appearance of Natasha Romanoff (Black Widow).",
+                        "James Rhodes becomes War Machine.",
+                        "Teaser discovery of Mjolnir (Thor's hammer) in New Mexico."
+                    ]
+                }
+            },
+            {
+                id: "thor-1",
+                title: "Thor",
+                type: "Movie",
+                releaseYear: 2011,
+                category: "Essential",
+                chronologicalPhase: "Phase 1",
+                prerequisites: ["Iron Man"],
+                skipDetails: {
+                    summary: "Set in 2011. Arrogant prince Thor is banished from Asgard to Earth, losing his powers until he proves worthy.",
+                    missedPlot: [
+                        "Introduction of Asgard, Thor, Loki, Odin, and Heimdall.",
+                        "First cameo appearance of Clint Barton (Hawkeye).",
+                        "Loki's villain origin and fake death setup for The Avengers."
+                    ]
+                }
+            },
+            {
+                id: "avengers-1",
+                title: "The Avengers",
+                type: "Movie",
+                releaseYear: 2012,
+                category: "Essential",
+                chronologicalPhase: "Phase 1",
+                prerequisites: ["Captain America: The First Avenger", "Iron Man", "Thor"],
+                skipDetails: {
+                    summary: "Set in 2012. Earth's Mightiest Heroes assemble for the first time to stop Loki and his Chitauri army in New York.",
+                    missedPlot: [
+                        "First official assembly of the core 6 Avengers.",
+                        "The Battle of New York (a focal catalyst for almost all subsequent MCU projects).",
+                        "Mind Stone introduced (inside Loki's scepter) and Thanos revealed in post-credits."
+                    ]
+                }
+            },
+            {
+                id: "cap-2",
+                title: "Captain America: The Winter Soldier",
+                type: "Movie",
+                releaseYear: 2014,
+                category: "Essential",
+                chronologicalPhase: "Phase 2",
+                prerequisites: ["Captain America: The First Avenger", "The Avengers"],
+                skipDetails: {
+                    summary: "Set in 2014. Steve Rogers teams up with Black Widow and Falcon to uncover a conspiracy inside S.H.I.E.L.D.",
+                    missedPlot: [
+                        "Fall of S.H.I.E.L.D. as Hydra is revealed to have infiltrated it from within.",
+                        "Bucky Barnes' return as the brainwashed assassin 'The Winter Soldier'.",
+                        "Introduction of Sam Wilson (Falcon) and Wanda/Pietro Maximoff in post-credits."
+                    ]
+                }
+            },
+            {
+                id: "gotg-1",
+                title: "Guardians of the Galaxy",
+                type: "Movie",
+                releaseYear: 2014,
+                category: "Essential",
+                chronologicalPhase: "Phase 2",
+                prerequisites: ["The Avengers"],
+                skipDetails: {
+                    summary: "Set in 2014. A group of intergalactic misfits unite to stop Ronan the Accuser from using an Infinity Stone.",
+                    missedPlot: [
+                        "Introduction of Star-Lord, Gamora, Drax, Rocket, and Groot.",
+                        "Explicit explanation of the six Infinity Stones by The Collector.",
+                        "First speaking role and major presence of Thanos."
+                    ]
+                }
+            },
+            {
+                id: "avengers-2",
+                title: "Avengers: Age of Ultron",
+                type: "Movie",
+                releaseYear: 2015,
+                category: "Essential",
+                chronologicalPhase: "Phase 2",
+                prerequisites: ["The Avengers", "Captain America: The Winter Soldier"],
+                skipDetails: {
+                    summary: "Set in 2015. Tony Stark unwittingly creates Ultron, a rogue AI bent on human extinction.",
+                    missedPlot: [
+                        "Creation and birth of Vision powered by the Mind Stone.",
+                        "Debut of Wanda Maximoff (Scarlet Witch).",
+                        "Sokovia destruction, setting up the political rift in Civil War."
+                    ]
+                }
+            },
+            {
+                id: "cap-3",
+                title: "Captain America: Civil War",
+                type: "Movie",
+                releaseYear: 2016,
+                category: "Essential",
+                chronologicalPhase: "Phase 3",
+                prerequisites: ["Avengers: Age of Ultron", "Captain America: The Winter Soldier"],
+                skipDetails: {
+                    summary: "Set in 2016. Fractures erupt within the Avengers over government oversight (Sokovia Accords) and Bucky Barnes.",
+                    missedPlot: [
+                        "MCU introduction of T'Challa (Black Panther) and Peter Parker (Spider-Man).",
+                        "The total fracture and breakup of the Avengers team.",
+                        "Rhodey's paralysis and Steve Rogers dropping his shield."
+                    ]
+                }
+            },
+            {
+                id: "black-panther",
+                title: "Black Panther",
+                type: "Movie",
+                releaseYear: 2018,
+                category: "Essential",
+                chronologicalPhase: "Phase 3",
+                prerequisites: ["Captain America: Civil War"],
+                skipDetails: {
+                    summary: "Set in 2016 (shortly after Civil War). T'Challa returns home to Wakanda to take the throne but faces Killmonger.",
+                    missedPlot: [
+                        "Full introduction to Wakanda's technology, vibranium lore, and culture.",
+                        "Key supporting cast debut: Shuri, Okoye, M'Baku.",
+                        "Bucky Barnes healed in Wakanda as 'White Wolf'."
+                    ]
+                }
+            },
+            {
+                id: "spider-man-1",
+                title: "Spider-Man: Homecoming",
+                type: "Movie",
+                releaseYear: 2017,
+                category: "Tied",
+                chronologicalPhase: "Phase 3",
+                prerequisites: ["Captain America: Civil War"],
+                skipDetails: {
+                    summary: "Set in 2016. Peter Parker navigates high school life while trying to prove himself to Tony Stark by taking on Vulture.",
+                    missedPlot: [
+                        "Development of Peter Parker & Tony Stark's mentor-mentee relationship.",
+                        "Introduction of Ned Leeds, MJ, and Stark suit tech."
+                    ]
+                }
+            },
+            {
+                id: "doc-strange-1",
+                title: "Doctor Strange",
+                type: "Movie",
+                releaseYear: 2016,
+                category: "Essential",
+                chronologicalPhase: "Phase 3",
+                prerequisites: [],
+                skipDetails: {
+                    summary: "Set in 2016-2017. Neurosurgeon Stephen Strange discovers the Mystic Arts after a devastating car accident.",
+                    missedPlot: [
+                        "Introduction of Sorcerers, Kamar-Taj, Wong, and the Mirror Dimension.",
+                        "Reveal of the Time Stone stored within the Eye of Agamotto.",
+                        "Introduction of Multiversal concepts."
+                    ]
+                }
+            },
+            {
+                id: "thor-3",
+                title: "Thor: Ragnarok",
+                type: "Movie",
+                releaseYear: 2017,
+                category: "Essential",
+                chronologicalPhase: "Phase 3",
+                prerequisites: ["Thor", "Avengers: Age of Ultron"],
+                skipDetails: {
+                    summary: "Set in 2017. Imprisoned on Sakkar without Mjolnir, Thor must race to save Asgard from his sister Hela.",
+                    missedPlot: [
+                        "Destruction of Thor's hammer Mjolnir and Asgard itself.",
+                        "Hulk's off-world journey post-Age of Ultron.",
+                        "Direct post-credit lead-in to Infinity War's opening scene."
+                    ]
+                }
+            },
+            {
+                id: "avengers-3",
+                title: "Avengers: Infinity War",
+                type: "Movie",
+                releaseYear: 2018,
+                category: "Essential",
+                chronologicalPhase: "Phase 3",
+                prerequisites: ["Thor: Ragnarok", "Guardians of the Galaxy", "Captain America: Civil War", "Doctor Strange"],
+                skipDetails: {
+                    summary: "Set in 2018. Thanos hunts down all six Infinity Stones to erase half of all living beings in the universe.",
+                    missedPlot: [
+                        "The infamous 'Snap' that disintegrates 50% of existence.",
+                        "Deaths of Gamora, Vision, Loki, and Heimdall.",
+                        "Thor creating Stormbreaker in Nidavellir."
+                    ]
+                }
+            },
+            {
+                id: "avengers-4",
+                title: "Avengers: Endgame",
+                type: "Movie",
+                releaseYear: 2019,
+                category: "Essential",
+                chronologicalPhase: "Phase 3",
+                prerequisites: ["Avengers: Infinity War"],
+                skipDetails: {
+                    summary: "Set in 2023 (5 years after the Snap). The surviving Avengers execute a 'Time Heist' to undo Thanos' destruction.",
+                    missedPlot: [
+                        "Deaths/Sacrifices of Tony Stark (Iron Man) and Natasha Romanoff (Black Widow).",
+                        "Steve Rogers retiring in the past and passing the mantle to Sam Wilson.",
+                        "The 5-year 'Blip' timeline jump impacting the entire MCU going forward."
+                    ]
+                }
+            },
+            {
+                id: "wandavision",
+                title: "WandaVision",
+                type: "TV Series",
+                releaseYear: 2021,
+                category: "Essential",
+                chronologicalPhase: "Phase 4",
+                prerequisites: ["Avengers: Endgame"],
+                skipDetails: {
+                    summary: "Set weeks after Endgame. Wanda Maximoff channels grief to trap an entire town in a sitcom-styled anomaly.",
+                    missedPlot: [
+                        "Wanda's official transformation into the Scarlet Witch and claiming the Darkhold.",
+                        "Introduction of Monica Rambeau's light powers.",
+                        "Essential setup for Doctor Strange in the Multiverse of Madness."
+                    ]
+                }
+            },
+            {
+                id: "loki-s1",
+                title: "Loki (Season 1)",
+                type: "TV Series",
+                releaseYear: 2021,
+                category: "Essential",
+                chronologicalPhase: "Phase 4",
+                prerequisites: ["Avengers: Endgame"],
+                skipDetails: {
+                    summary: "Set outside linear time. 2012-Loki escapes with the Tesseract and gets arrested by the Time Variance Authority (TVA).",
+                    missedPlot: [
+                        "Introduction of the TVA, Variants, and the Sacred Timeline.",
+                        "Debut of 'He Who Remains' (Kang the Conqueror variant).",
+                        "Unraveling of the Multiverse and timeline branching."
+                    ]
+                }
+            },
+            {
+                id: "spider-man-3",
+                title: "Spider-Man: No Way Home",
+                type: "Movie",
+                releaseYear: 2021,
+                category: "Essential",
+                chronologicalPhase: "Phase 4",
+                prerequisites: ["Spider-Man: Homecoming", "Doctor Strange", "Loki (Season 1)"],
+                skipDetails: {
+                    summary: "Set late 2024. Peter Parker seeks Doctor Strange's magic to make people forget his identity, fracturing the Multiverse.",
+                    missedPlot: [
+                        "Cross-universe teamup with Tobey Maguire and Andrew Garfield's Spider-Men.",
+                        "Global memory wipe erasing Peter Parker's existence from everyone's minds.",
+                        "Death of Aunt May ('With great power...')."
+                    ]
+                }
+            },
+            {
+                id: "doc-strange-2",
+                title: "Doctor Strange in the Multiverse of Madness",
+                type: "Movie",
+                releaseYear: 2022,
+                category: "Essential",
+                chronologicalPhase: "Phase 4",
+                prerequisites: ["WandaVision", "Spider-Man: No Way Home"],
+                skipDetails: {
+                    summary: "Set late 2024. Stephen Strange protects America Chavez from a Darkhold-corrupted Scarlet Witch across dimensions.",
+                    missedPlot: [
+                        "Introduction of star-portal multiversal jumper America Chavez.",
+                        "Dark fate and apparent sacrifice of Scarlet Witch.",
+                        "Introduction of Earth-838 and the Illuminati."
+                    ]
+                }
+            },
+            {
+                id: "gotg-3",
+                title: "Guardians of the Galaxy Vol. 3",
+                type: "Movie",
+                releaseYear: 2023,
+                category: "Essential",
+                chronologicalPhase: "Phase 5",
+                prerequisites: ["Guardians of the Galaxy", "Avengers: Endgame"],
+                skipDetails: {
+                    summary: "Set in 2026. The Guardians rally to save Rocket's life from his creator, the High Evolutionary.",
+                    missedPlot: [
+                        "Rocket Raccoon's tragic origin story.",
+                        "Conclusion and emotional farewell of the original Guardians team.",
+                        "Debut of Adam Warlock and new Guardians lineup."
+                    ]
+                }
+            },
+            {
+                id: "deadpool-3",
+                title: "Deadpool & Wolverine",
+                type: "Movie",
+                releaseYear: 2024,
+                category: "Essential",
+                chronologicalPhase: "Phase 5",
+                prerequisites: ["Loki (Season 1)", "Avengers: Endgame"],
+                skipDetails: {
+                    summary: "Set in 2024/2026. Wade Wilson is pulled from his quiet life by the TVA and teams up with a reluctant Wolverine variant.",
+                    missedPlot: [
+                        "Integration of 20th Century Fox X-Men legacy characters into the MCU.",
+                        "In-depth look at The Void, TVA Anchor Beings, and timeline corruption.",
+                        "Wolverine's formal arrival in MCU lore."
+                    ]
+                }
+            }
+        ];
+
+        // APP STATE MANAGEMENT
+        let watchedState = {};
+        let currentFilter = 'all';
+        let currentSearchQuery = '';
+
+        // DOM ELEMENTS
+        const timelineGrid = document.getElementById('timeline-grid');
+        const emptyState = document.getElementById('empty-state');
+        const progressBar = document.getElementById('progress-bar');
+        const progressText = document.getElementById('progress-text');
+        const searchInput = document.getElementById('search-input');
+        const filterButtonsContainer = document.getElementById('filter-buttons');
+        
+        // Modal DOM Elements
+        const modalBackdrop = document.getElementById('modal-backdrop');
+        const modalContainer = document.getElementById('modal-card');
+        const modalTitle = document.getElementById('modal-title');
+        const modalSubtitle = document.getElementById('modal-subtitle');
+        const modalBadges = document.getElementById('modal-badges');
+        const modalPrereqs = document.getElementById('modal-prereqs');
+        const modalMissedPlot = document.getElementById('modal-missed-plot');
+        const modalSummary = document.getElementById('modal-summary');
+        const modalCloseBtn = document.getElementById('modal-close-btn');
+        const modalCloseBottom = document.getElementById('modal-close-bottom');
+
+        // INITIALIZATION
+        function initApp() {
+            loadWatchedState();
+            renderTimeline();
+            updateProgress();
+            setupEventListeners();
+        }
+
+        // LOAD WATCHED STATE FROM LOCAL STORAGE
+        function loadWatchedState() {
+            const saved = localStorage.getItem('mcu_watched_tracker_v1');
+            if (saved) {
+                try {
+                    watchedState = JSON.parse(saved);
+                } catch (e) {
+                    watchedState = {};
+                }
+            }
+        }
+
+        // SAVE WATCHED STATE TO LOCAL STORAGE
+        function saveWatchedState() {
+            localStorage.setItem('mcu_watched_tracker_v1', JSON.stringify(watchedState));
+            updateProgress();
+        }
+
+        // UPDATE PROGRESS BAR & STATS
+        function updateProgress() {
+            const total = mcuData.length;
+            const watchedCount = mcuData.filter(item => watchedState[item.id]).length;
+            const percentage = total > 0 ? Math.round((watchedCount / total) * 100) : 0;
+
+            progressBar.style.width = `${percentage}%`;
+            progressText.textContent = `${percentage}% (${watchedCount}/${total})`;
+        }
+
+        // CATEGORY COLOR HELPER
+        function getCategoryColor(category) {
+            switch (category) {
+                case 'Essential':
+                    return { bg: 'bg-mcu-red', text: 'text-mcu-red', border: 'border-mcu-red' };
+                case 'Tied':
+                    return { bg: 'bg-amber-600', text: 'text-amber-500', border: 'border-amber-600' };
+                default: // Optional
+                    return { bg: 'bg-slate-600', text: 'text-slate-400', border: 'border-slate-600' };
+            }
+        }
+
+        // RENDER TIMELINE CARDS
+        function renderTimeline() {
+            timelineGrid.innerHTML = '';
+            
+            const filteredData = mcuData.filter(item => {
+                // Search Match (Title or Prerequisite)
+                const query = currentSearchQuery.toLowerCase();
+                const matchesSearch = item.title.toLowerCase().includes(query) ||
+                                      item.prerequisites.some(p => p.toLowerCase().includes(query));
+
+                if (!matchesSearch) return false;
+
+                // Category/Type Filter Match
+                const isWatched = !!watchedState[item.id];
+                switch (currentFilter) {
+                    case 'essential':
+                        return item.category === 'Essential';
+                    case 'tied_essential':
+                        return item.category === 'Essential' || item.category === 'Tied';
+                    case 'movies':
+                        return item.type === 'Movie';
+                    case 'tv':
+                        return item.type === 'TV Series' || item.type === 'Special';
+                    case 'unwatched':
+                        return !isWatched;
+                    default:
+                        return true;
+                }
+            });
+
+            if (filteredData.length === 0) {
+                emptyState.classList.remove('hidden');
+            } else {
+                emptyState.classList.add('hidden');
+                filteredData.forEach(item => {
+                    timelineGrid.appendChild(createCardElement(item));
+                });
+            }
+        }
+
+        // CREATE A SINGLE CARD ELEMENT
+        function createCardElement(item) {
+            const isWatched = !!watchedState[item.id];
+            const colors = getCategoryColor(item.category);
+
+            const card = document.createElement('div');
+            card.className = `bg-mcu-card rounded-xl p-5 border border-slate-800/80 shadow-lg hover:border-slate-700 transition-all duration-200 flex flex-col justify-between relative overflow-hidden group ${isWatched ? 'opacity-75' : ''}`;
+
+            // Category colored left bar
+            const leftBar = document.createElement('div');
+            leftBar.className = `absolute left-0 top-0 bottom-0 w-1.5 ${colors.bg}`;
+            card.appendChild(leftBar);
+
+            card.innerHTML += `
+                <div>
+                    <!-- Header Badges & Checkbox -->
+                    <div class="flex items-center justify-between gap-2 mb-3">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded text-white ${colors.bg}">
+                                ${item.category}
+                            </span>
+                            <span class="text-[10px] font-semibold bg-slate-800 text-slate-300 px-2 py-0.5 rounded border border-slate-700">
+                                ${item.type}
+                            </span>
+                        </div>
+                        <label class="flex items-center gap-1.5 cursor-pointer text-xs select-none text-slate-400 hover:text-slate-200">
+                            <input type="checkbox" data-id="${item.id}" ${isWatched ? 'checked' : ''} 
+                                   class="card-checkbox w-4 h-4 rounded accent-mcu-red bg-slate-900 border-slate-700 cursor-pointer">
+                            <span>${isWatched ? 'Watched' : 'Mark Watched'}</span>
+                        </label>
+                    </div>
+
+                    <!-- Title & Year -->
+                    <h3 class="font-bold text-lg text-white leading-snug group-hover:text-mcu-red transition-colors">
+                        ${item.title}
+                    </h3>
+                    <p class="text-xs text-slate-400 font-mono mt-1">
+                        ${item.releaseYear} &bull; ${item.chronologicalPhase}
+                    </p>
+                </div>
+
+                <!-- Footer / Action -->
+                <div class="mt-5 pt-3 border-t border-slate-800/60 flex items-center justify-between">
+                    <span class="text-xs text-slate-500">
+                        ${item.prerequisites.length ? `${item.prerequisites.length} Prerequisite(s)` : 'Standalone Entry'}
+                    </span>
+                    <button data-id="${item.id}" class="details-btn text-xs font-semibold text-slate-300 hover:text-white bg-slate-800/80 hover:bg-slate-700 px-3 py-1.5 rounded-md border border-slate-700 transition-all flex items-center gap-1">
+                        <span>Details</span>
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                        </svg>
+                    </button>
+                </div>
+            `;
+
+            return card;
+        }
+
+        // OPEN DETAILS MODAL
+        function openModal(id) {
+            const item = mcuData.find(x => x.id === id);
+            if (!item) return;
+
+            const colors = getCategoryColor(item.category);
+
+            // Populate Header & Badges
+            modalTitle.textContent = item.title;
+            modalSubtitle.textContent = `${item.releaseYear} • ${item.type} • ${item.chronologicalPhase}`;
+            modalBadges.innerHTML = `
+                <span class="text-[10px] font-black uppercase px-2 py-0.5 rounded text-white ${colors.bg}">
+                    ${item.category}
+                </span>
+                <span class="text-[10px] font-semibold bg-slate-800 text-slate-300 px-2 py-0.5 rounded border border-slate-700">
+                    ${item.type}
+                </span>
+            `;
+
+            // Populate Prerequisites
+            modalPrereqs.innerHTML = '';
+            if (item.prerequisites.length === 0) {
+                modalPrereqs.innerHTML = `<span class="text-xs text-slate-500 italic">None. You can watch this cleanly without prior MCU setup!</span>`;
+            } else {
+                item.prerequisites.forEach(prereq => {
+                    const pill = document.createElement('span');
+                    pill.className = 'text-xs bg-slate-800 text-slate-200 border border-slate-700 px-2.5 py-1 rounded-md font-medium';
+                    pill.textContent = prereq;
+                    modalPrereqs.appendChild(pill);
+                });
+            }
+
+            // Populate Missed Plot Bullets
+            modalMissedPlot.innerHTML = '';
+            item.skipDetails.missedPlot.forEach(point => {
+                const li = document.createElement('li');
+                li.className = 'flex items-start gap-2';
+                li.innerHTML = `<span class="text-mcu-red font-bold select-none">&bull;</span><span>${point}</span>`;
+                modalMissedPlot.appendChild(li);
+            });
+
+            // Populate Summary
+            modalSummary.textContent = item.skipDetails.summary;
+
+            // Show Modal with Animation
+            modalBackdrop.classList.remove('pointer-events-none', 'opacity-0');
+            modalContainer.classList.remove('scale-95');
+            modalContainer.classList.add('scale-100');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // CLOSE DETAILS MODAL
+        function closeModal() {
+            modalBackdrop.classList.add('pointer-events-none', 'opacity-0');
+            modalContainer.classList.remove('scale-100');
+            modalContainer.classList.add('scale-95');
+            document.body.style.overflow = '';
+        }
+
+        // EVENT LISTENERS SETUP
+        function setupEventListeners() {
+            
+            // Checkbox Change & Details Button Click delegation
+            timelineGrid.addEventListener('click', (e) => {
+                // Checkbox toggle
+                if (e.target.classList.contains('card-checkbox')) {
+                    const id = e.target.getAttribute('data-id');
+                    watchedState[id] = e.target.checked;
+                    saveWatchedState();
+                    renderTimeline();
+                    return;
+                }
+
+                // Details Button Click
+                const detailsBtn = e.target.closest('.details-btn');
+                if (detailsBtn) {
+                    const id = detailsBtn.getAttribute('data-id');
+                    openModal(id);
+                }
+            });
+
+            // Search Input listener
+            searchInput.addEventListener('input', (e) => {
+                currentSearchQuery = e.target.value.trim();
+                renderTimeline();
+            });
+
+            // Filter Buttons click handler
+            filterButtonsContainer.addEventListener('click', (e) => {
+                const btn = e.target.closest('.filter-btn');
+                if (!btn) return;
+
+                // Toggle active class visually
+                document.querySelectorAll('.filter-btn').forEach(b => {
+                    b.classList.remove('active', 'bg-mcu-red', 'text-white');
+                    b.classList.add('bg-slate-800', 'text-slate-300');
+                });
+                btn.classList.add('active', 'bg-mcu-red', 'text-white');
+                btn.classList.remove('bg-slate-800', 'text-slate-300');
+
+                currentFilter = btn.getAttribute('data-filter');
+                renderTimeline();
+            });
+
+            // Modal Close Listeners
+            modalCloseBtn.addEventListener('click', closeModal);
+            modalCloseBottom.addEventListener('click', closeModal);
+            modalBackdrop.addEventListener('click', (e) => {
+                if (e.target === modalBackdrop) closeModal();
+            });
+
+            // Escape key listener for modal
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') closeModal();
+            });
+        }
+
+        // START APP ON DOM LOAD
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
 </body>
 </html>
+
